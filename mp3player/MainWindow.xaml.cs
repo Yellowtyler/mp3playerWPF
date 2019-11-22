@@ -24,11 +24,12 @@ namespace mp3player
         public MainWindow()
         {
             InitializeComponent();
-          var s= new PlayerViewModel(new DialogService(), new JsonFileService());
+          s= new PlayerViewModel(new DialogService(), new JsonFileService());
             this.DataContext = s;
             mediaElement.DataContext = s.Mp;
+          
         }
-
+        PlayerViewModel s;
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             var context = DataContext as PlayerViewModel;
@@ -37,11 +38,12 @@ namespace mp3player
                 return;
 
             context.Isplaying = !context.Isplaying;
+            
         }
-        private TimeSpan TotalTime;
+       private TimeSpan TotalTime;
         private DispatcherTimer timerMusicTime;
 
-        private void mediaElement_MediaOpened_1(object sender, RoutedEventArgs e)
+       /* private void mediaElement_MediaOpened_1(object sender, RoutedEventArgs e)
         {
             TotalTime = mediaElement.NaturalDuration.TimeSpan;
 
@@ -62,6 +64,16 @@ namespace mp3player
                     slider.Value = mediaElement.Position.TotalSeconds /
                                        TotalTime.TotalSeconds;
                 }
+            }
+        }*/
+
+      
+
+        private void slider_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            if (TotalTime.TotalSeconds > 0)
+            {
+                s.Mp.Position = TimeSpan.FromSeconds(slider.Value * TotalTime.TotalSeconds);
             }
         }
     }

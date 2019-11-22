@@ -76,7 +76,7 @@ namespace mp3player
         }
 
         double slidervalue;
-        double SliderValue
+     public   double SliderValue
         {
             get
             {
@@ -86,6 +86,34 @@ namespace mp3player
             {
                 slidervalue = value;
                 OnPropertyChanged("SliderValue");
+            }
+        }
+
+       Duration mpmax;
+        public Duration Mpmax
+        {
+            get
+            {
+                return mpmax;
+            }
+            set
+            {
+               mpmax = Mp.NaturalDuration;
+                OnPropertyChanged("Mpmax");
+            }
+        }
+        Uri mpsource;
+        public Uri Mpsource
+        {
+
+            get
+            {
+                return mpsource;
+            }
+            set
+            {
+                mpsource = Mp.Source;
+                OnPropertyChanged("Mpsource");
             }
         }
         public ICommand back
@@ -118,6 +146,11 @@ namespace mp3player
             get;
             set;
         }
+        public ICommand sliderchange
+        {
+            get;
+            set;
+        }
         void Open(object o)
         {
             try
@@ -143,9 +176,10 @@ namespace mp3player
                 Song s = o as Song;
                 Mp.Open(new Uri(s.PathS, UriKind.RelativeOrAbsolute));
                 Mp.Play();
-                
+               
                 Isplaying = true;
                 flag = 1;
+             
               Mp.MediaOpened += new EventHandler(mediaOpened);
             }
           
@@ -153,7 +187,7 @@ namespace mp3player
             {
                 Mp.Open(new Uri(Songs[0].PathS, UriKind.RelativeOrAbsolute));
                 Mp.Play();
-               
+                Mp.MediaOpened += new EventHandler(mediaOpened);
                 flag =1;
               
             }
@@ -170,7 +204,13 @@ namespace mp3player
           temp = o;
         }
 
-
+        private void slider_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            if (TotalTime.TotalSeconds > 0)
+            {
+                Mp.Position = TimeSpan.FromSeconds(SliderValue * TotalTime.TotalSeconds);
+            }
+        }
 
         private TimeSpan TotalTime;
         private DispatcherTimer timerMusicTime;
