@@ -16,9 +16,10 @@ namespace mp3player
    public class PlayerViewModel : INotifyPropertyChanged
     {
      
-        MediaPlayer mp;
+       
         IDialogService dialog;
         IFileService file;
+        MediaPlayer mp;
         public MediaPlayer Mp
         {
             get
@@ -89,33 +90,23 @@ namespace mp3player
             }
         }
 
-       Duration mpmax;
-        public Duration Mpmax
-        {
-            get
-            {
-                return mpmax;
-            }
-            set
-            {
-               mpmax = Mp.NaturalDuration;
-                OnPropertyChanged("Mpmax");
-            }
-        }
-        Uri mpsource;
-        public Uri Mpsource
+     
+       TimeSpan totalTime;
+        public TimeSpan TotalTime
         {
 
             get
             {
-                return mpsource;
+                return totalTime;
             }
             set
             {
-                mpsource = Mp.Source;
-                OnPropertyChanged("Mpsource");
+                totalTime = value;
+                OnPropertyChanged("TotalTime");
             }
         }
+
+      
         public ICommand back
         {
             get;
@@ -141,15 +132,26 @@ namespace mp3player
             get;
             set;
         }
-        public ICommand pause
+      public ICommand repeat
         {
             get;
             set;
         }
-        public ICommand sliderchange
+       public ICommand remove
         {
             get;
             set;
+        }
+
+
+
+        string Getname(string path)
+        {
+            string[] words = path.Split('\\');
+            string[] name = words[words.Length-1].Split('.');
+
+            return name[0];
+
         }
         void Open(object o)
         {
@@ -157,7 +159,8 @@ namespace mp3player
             {
                 if(dialog.OpenFileDialog()==true)
                 {
-                    Songs.Add(new Song() { PathS = dialog.FilePath});
+                  
+                    Songs.Add(new Song() { PathS = dialog.FilePath , NameS = Getname(dialog.FilePath) });
                 }
             }
             catch(Exception ex)
@@ -166,42 +169,108 @@ namespace mp3player
             }
 
         }
+
+
+
+        void Remove(object o)
+        {
+            if(o!=null)
+            {
+             
+                Songs.Remove(o as Song);
+            }
+
+            else
+            {
+                var res = MessageBox.Show("Choose songs for removing", "Error!", MessageBoxButton.OK,MessageBoxImage.Error);
+            }
+        }
+
+
+        Song CurrentSong;
         int flag = 0;
         object temp=null;
         void Play(object o)
         {
-           
-            if ((o != null&&(flag==0))||( o != temp && (flag == 2 || flag == 1)))
+           Random rand = new Random();
+            if (IsShuffled == true&& o == null && flag == 0)
             {
-                Song s = o as Song;
-                Mp.Open(new Uri(s.PathS, UriKind.RelativeOrAbsolute));
-                Mp.Play();
+            
                
-                Isplaying = true;
-                flag = 1;
-             
-              Mp.MediaOpened += new EventHandler(mediaOpened);
-            }
-          
-            else if (o==null&&flag==0)
-            {
-                Mp.Open(new Uri(Songs[0].PathS, UriKind.RelativeOrAbsolute));
+                int n = rand.Next(0, Songs.Count);
+                int temprand = n;
+                if(CurrentSong == Songs[n])
+                {
+                    while(temprand==n)
+                    {
+                         n = rand.Next(0, Songs.Count);
+                    }
+                }
+                CurrentSong = Songs[n];
+                
+                Mp.Open(new Uri(Songs[n].PathS, UriKind.RelativeOrAbsolute));
                 Mp.Play();
                 Mp.MediaOpened += new EventHandler(mediaOpened);
-                flag =1;
               
-            }
-            else if (flag == 1)
-            {
-                Mp.Pause();
-                flag = 2;
-            }
-            else if(flag==2)
-            {
-                Mp.Play();
                 flag = 1;
             }
-          temp = o;
+            else if((o != null && (flag == 0)) || (o != temp && (flag == 2 || flag == 1))&&IsShuffled==true)
+            {
+         
+
+                int n = rand.Next(0, Songs.Count);
+                int temprand = n;
+                if (CurrentSong == Songs[n])
+                {
+                    while (temprand == n)
+                    {
+                        n = rand.Next(0, Songs.Count);
+                    }
+                }
+                CurrentSong = Songs[n];
+
+                Mp.Open(new Uri(Songs[n].PathS, UriKind.RelativeOrAbsolute));
+                Mp.Play();
+                Mp.MediaOpened += new EventHandler(mediaOpened);
+                 Isplaying = true;
+                flag = 1;
+
+            }
+          
+              else  if ((o != null && (flag == 0)) || (o != temp && (flag == 2 || flag == 1))&& IsShuffled == false)
+                {
+                    Song s = o as Song;
+                    CurrentSong = s;
+                    Mp.Open(new Uri(s.PathS, UriKind.RelativeOrAbsolute));
+                    Mp.Play();
+                    Mp.MediaOpened += new EventHandler(mediaOpened);
+                    Isplaying = true;
+                    flag = 1;
+                }
+
+                else if (o == null && flag == 0&&IsShuffled==false)
+                {
+                    Mp.Open(new Uri(Songs[0].PathS, UriKind.RelativeOrAbsolute));
+                    CurrentSong = Songs[0];
+                    Mp.Play();
+                    Mp.MediaOpened += new EventHandler(mediaOpened);
+                    flag = 1;
+
+                }
+                else if (flag == 1)
+                {
+                    Mp.Pause();
+                    flag = 2;
+                }
+                else if (flag == 2)
+                {
+                    Mp.Play();
+                    flag = 1;
+                }
+                
+            
+            Selecteds = CurrentSong;
+            temp = Selecteds;
         }
 
         private void slider_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -212,15 +281,16 @@ namespace mp3player
             }
         }
 
-        private TimeSpan TotalTime;
+       
         private DispatcherTimer timerMusicTime;
-        
+   
         void mediaOpened(object sender, EventArgs e)
         {
+        
             TotalTime = new TimeSpan();
             TotalTime = Mp.NaturalDuration.TimeSpan;
 
-            // Create a timer that will update the counters and the time slider
+          
             timerMusicTime = new DispatcherTimer();
             timerMusicTime.Interval = TimeSpan.FromSeconds(1);
             timerMusicTime.Tick += new EventHandler(timer_Tick);
@@ -228,29 +298,121 @@ namespace mp3player
         }
         private void timer_Tick(object sender, EventArgs e)
         {
-            if (Mp.NaturalDuration.TimeSpan.TotalSeconds > 0)
+            if (Mp.NaturalDuration.HasTimeSpan)
             {
-                if (TotalTime.TotalSeconds > 0)
+                if (Mp.NaturalDuration.TimeSpan.TotalSeconds > 0)
                 {
-                    // Updating time slider
-                    SliderValue = Mp.Position.TotalSeconds /
-                                       TotalTime.TotalSeconds;
+                    if (TotalTime.TotalSeconds > 0)
+                    {
+                      
+                        SliderValue = Mp.Position.TotalSeconds /
+                                           TotalTime.TotalSeconds;
+                    }
+                    if(SliderValue==1)
+                    {
+                        object o = new object();
+                        if (IsRepeated == false)
+                            Further(o);
+                        else
+                            Repeat(o);
+                    }
                 }
             }
         }
+
+       bool IsRepeated = false;
+        void Repeat(object o)
+        {
+            if(IsRepeated==false)
+            {
+
+                IsRepeated =true;
+
+            }
+       else if (IsRepeated ==true && SliderValue != 1)
+            {
+                IsRepeated = false;
+         
+            }
+
+        else if(IsRepeated == true && SliderValue == 1)
+            {
+                Mp.Open(new Uri(CurrentSong.PathS, UriKind.RelativeOrAbsolute));
+                   Mp.Play();
+                  Mp.MediaOpened += new EventHandler(mediaOpened);
+            }
+
+        }
+        bool IsFurthered = false;
+        void Further(object o)
+        {
+            for (int i = 0; i < Songs.Count; i++)
+            {
+                if (CurrentSong == Songs[i])
+                {
+                    if (i != Songs.Count - 1 && Songs.Count!=1)
+                    { Play(Songs[i + 1]); }
+                    else if(Songs.Count==1 || i == Songs.Count - 1)
+                    {
+                        Play(Songs[0]);
+                    }
+                    break;
+
+                }
+
+
+            }
+
+           IsFurthered = true;
+        }
+
+        void Back(object o)
+        {
+
+            for (int i = 0; i < Songs.Count; i++)
+            {
+                if (CurrentSong == Songs[i])
+                {
+                    if (i != 0 && Songs.Count != 1)
+                    { Play(Songs[i -1]); }
+                    else if (Songs.Count == 1 || i == 0)
+                    {
+                        Play(Songs[Songs.Count-1]);
+                    }
+                    break;
+
+                }
+
+
+            }
+        }
+
+        bool IsShuffled = false;
+        void Shuffle(object o)
+        {
+            if (IsShuffled == false)
+                IsShuffled = true;
+
+            else IsShuffled = false;
+
+
+        }
+
         public PlayerViewModel(IDialogService dialog, IFileService file)
         {
             
             Songs = new ObservableCollection<Song>();
             this.dialog = dialog;
             this.file = file;
-            var s = this.file.Open("data.json");
-            Songs = Song.GetSongs(s);
+            Songs = Song.GetSongs();
             Mp = new MediaPlayer();
-            // Songs.Clear();
-
             play = new DelegateCommand(Play);
-           open = new DelegateCommand(Open);       
+            open = new DelegateCommand(Open);
+            remove = new DelegateCommand(Remove);
+            repeat = new DelegateCommand(Repeat);
+            further = new DelegateCommand(Further);
+            back = new DelegateCommand(Back);
+            shuffle = new DelegateCommand(Shuffle);
         }
         void OnPropertyChanged(string propertyname)
         {

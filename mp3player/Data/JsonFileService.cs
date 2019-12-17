@@ -6,24 +6,25 @@ using System.Threading.Tasks;
 using System.Runtime.Serialization.Json;
 using System.IO;
 using System.Windows;
+using System.Collections.ObjectModel;
 
 namespace mp3player
 {
    public class JsonFileService :IFileService
     {
- public List<string> Open(string path)
+ public ObservableCollection<Song> Open(string path)
         {
-           DataContractJsonSerializer json = new DataContractJsonSerializer(typeof(string));
-            List<string> p = new List<string>();
+           DataContractJsonSerializer json = new DataContractJsonSerializer(typeof(ObservableCollection<Song>));
+            ObservableCollection<Song> p = new ObservableCollection<Song>();
             if (!File.Exists(path))
             {
                 File.Create("data.json");
-                p.Add("sn");
+                p.Add(new Song() { NameS="Gaston - Hekla", PathS= "Hekla.mp3" });
                 return p;
             }
             else if(new FileInfo("data.json").Length == 0)
             {
-                p.Add("sn");
+                p.Add(new Song() { NameS = "Gaston - Hekla", PathS = "Hekla.mp3" });
                 return p;
             }
             else
@@ -32,16 +33,16 @@ namespace mp3player
                     using (FileStream f = new FileStream(path, FileMode.OpenOrCreate))
                     {
                          
-                                p = (List<string>)json.ReadObject(f);
+                                p = (ObservableCollection<Song>)json.ReadObject(f);
                     }
               
              
             }
             return p;
         }
-        public void Save(string path, List<string> songs)
+        public void Save(string path, ObservableCollection<Song> songs)
         {
-            DataContractJsonSerializer json = new DataContractJsonSerializer(typeof(string));
+            DataContractJsonSerializer json = new DataContractJsonSerializer(typeof(ObservableCollection<Song>));
             using (FileStream f = new FileStream(path, FileMode.Truncate))
             {
                 json.WriteObject(f,songs);

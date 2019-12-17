@@ -40,15 +40,12 @@ namespace mp3player
                 OnPropertyChanged("PathS");
             }
         }
-        public  static ObservableCollection<Song> GetSongs(List<string> s)
+        public  static ObservableCollection<Song> GetSongs()
         {
-          
+            JsonFileService js = new JsonFileService();
             ObservableCollection<Song> songs = new ObservableCollection<Song>();
-           songs.Add(new Song { NameS = "S" , PathS= "Hekla.mp3" });
-          /*  foreach (string str in s)
-            {
-              songs.Add(new Song() { Paths = str });
-            }*/
+            songs = js.Open("data.json");
+      
             return songs;
         }
         void OnPropertyChanged(string propertyname)
