@@ -28,14 +28,9 @@ namespace mp3player
             InitializeComponent();
           s= new PlayerViewModel(new DialogService(), new JsonFileService());
             this.DataContext = s;
-           // mediaElement.DataContext = s.Mp;
+        
             Closing += MainWindow_Closing;
-          /*  var image = new BitmapImage();
-            image.BeginInit();
-            image.UriSource = new Uri("liz.gif", UriKind.RelativeOrAbsolute);
-            image.EndInit();
-            ImageBehavior.SetAnimatedSource(img, image);
-            ImageBehavior.SetRepeatBehavior(img, RepeatBehavior.Forever);*/
+      
         }
         PlayerViewModel s;
 

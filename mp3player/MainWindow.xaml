@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:mp3player"
         mc:Ignorable="d"
         xmlns:gif="http://wpfanimatedgif.codeplex.com"
-        Title="MainWindow" Height="487.844" Width="230.492">
+        Title="MainWindow" Height="487.844" Width="254.492">
     <Window.Resources>
         <Style x:Key="Play" TargetType="Button">
             <Setter Property="Background" Value="Black"/>
@@ -24,7 +24,7 @@
         </Style>
     </Window.Resources>
     <Grid RenderTransformOrigin="0.671,0.538">
-        <Button x:Name="button"  HorizontalAlignment="Left" Margin="74,151,0,0" VerticalAlignment="Top" Width="68"  Height="68" Command="{Binding play}" CommandParameter="{Binding Selecteds}" Click="Button_Click">
+        <Button x:Name="button"  HorizontalAlignment="Left" Margin="88,150,0,0" VerticalAlignment="Top" Width="68"  Height="68" Command="{Binding play}" CommandParameter="{Binding Selecteds}" Click="Button_Click">
             <Button.Template>
                 <ControlTemplate TargetType="Button">
                     <Grid>
@@ -41,7 +41,7 @@
             </Button.Template>
 
         </Button>
-        <Button x:Name="button1"  HorizontalAlignment="Left" Margin="7,169,0,0" VerticalAlignment="Top" Width="64" Command="{Binding back}">
+        <Button x:Name="button1"  HorizontalAlignment="Left" Margin="10,169,0,0" VerticalAlignment="Top" Width="64" Command="{Binding back}">
             <Button.Template>
                 <ControlTemplate TargetType="Button">
                     <Grid Height="35" Width="60">
@@ -53,7 +53,7 @@
                 </ControlTemplate>
             </Button.Template>
         </Button>
-        <Button x:Name="button2"  HorizontalAlignment="Left" Margin="157,169,0,0" VerticalAlignment="Top" Width="50" Command="{Binding further}">
+        <Button x:Name="button2"  HorizontalAlignment="Left" Margin="172,169,0,0" VerticalAlignment="Top" Width="50" Command="{Binding further}">
 
             <Button.Template>
                 <ControlTemplate TargetType="Button">
@@ -68,19 +68,19 @@
 
         </Button>
         <Button x:Name="button3" Content="Load" HorizontalAlignment="Left" Margin="10,368,0,0" VerticalAlignment="Top" Width="75" Command="{Binding open}"/>
-        <DataGrid x:Name="listBox"  ItemsSource="{Binding Path=Songs}" SelectedItem="{Binding Selecteds,Mode=TwoWay}" HorizontalAlignment="Left" Height="110" Margin="10,241,0,0" VerticalAlignment="Top" Width="197" AutoGenerateColumns="False" CanUserAddRows="False">
+        <DataGrid x:Name="listBox"  ItemsSource="{Binding Path=Songs}" SelectedItem="{Binding Selecteds,Mode=TwoWay}" HorizontalAlignment="Left" Height="110" Margin="10,242,0,0" VerticalAlignment="Top" Width="212" AutoGenerateColumns="False" CanUserAddRows="False">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Songs" Binding="{Binding NameS}" Width="200"/>
 
 
             </DataGrid.Columns>
         </DataGrid>
-        <Button x:Name="button4" Content="Remove" HorizontalAlignment="Left" Margin="124,368,0,0" VerticalAlignment="Top" Width="83" Command="{Binding remove}" CommandParameter="{Binding Selecteds}"/>
-        <Slider x:Name="slider" HorizontalAlignment="Left" Margin="10,101,0,0" VerticalAlignment="Top" Width="202" Value="{Binding SliderValue, Mode=TwoWay}"  Minimum="0" Maximum="1" MouseLeftButtonUp="slider_MouseLeftButtonUp" IsMoveToPointEnabled="True" MouseLeftButtonDown="slider_MouseLeftButtonDown"/>
+        <Button x:Name="button4" Content="Remove" HorizontalAlignment="Left" Margin="139,368,0,0" VerticalAlignment="Top" Width="83" Command="{Binding remove}" CommandParameter="{Binding Selecteds}"/>
+        <Slider x:Name="slider" HorizontalAlignment="Left" Margin="10,101,0,0" VerticalAlignment="Top" Width="212" Value="{Binding SliderValue, Mode=TwoWay}"  Minimum="0" Maximum="1" MouseLeftButtonUp="slider_MouseLeftButtonUp" IsMoveToPointEnabled="True" MouseLeftButtonDown="slider_MouseLeftButtonDown"/>
         <Button x:Name="button5" Content="Shuffle" HorizontalAlignment="Left" Margin="10,416,0,0" VerticalAlignment="Top" Width="75" RenderTransformOrigin="0.04,0.591" Command="{Binding shuffle}"/>
-        <Button x:Name="button6" Content="Repeat" HorizontalAlignment="Left" Margin="124,416,0,0" VerticalAlignment="Top" Width="83" Command="{Binding repeat}"/>
-        <Label x:Name="label" Content="{Binding Mp.Position}" HorizontalAlignment="Left" Margin="7,123,0,0" VerticalAlignment="Top"/>
-        <Label x:Name="label1" Content="{Binding TotalTime}" HorizontalAlignment="Left" Margin="174,123,0,0" VerticalAlignment="Top"/>
+        <Button x:Name="button6" Content="Repeat" HorizontalAlignment="Left" Margin="139,416,0,0" VerticalAlignment="Top" Width="83" Command="{Binding repeat}"/>
+        <Label x:Name="label" Content="{Binding Position}" HorizontalAlignment="Left" Margin="7,123,0,0" VerticalAlignment="Top"/>
+        <Label x:Name="label1" Content="{Binding TotalTime}" HorizontalAlignment="Left" Margin="181,123,0,0" VerticalAlignment="Top"/>
         <Image x:Name="image" HorizontalAlignment="Left" Height="96" Margin="69,5,0,0" VerticalAlignment="Top" Width="153" gif:ImageBehavior.RepeatBehavior="Forever" gif:ImageBehavior.AnimatedSource="Images/liz.gif"/>
 
 

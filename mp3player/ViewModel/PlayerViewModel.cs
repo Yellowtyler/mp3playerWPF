@@ -105,7 +105,21 @@ namespace mp3player
                 OnPropertyChanged("TotalTime");
             }
         }
+        TimeSpan position;
+        public TimeSpan Position
+        {
 
+            get
+            {
+                return position;
+            }
+
+            set
+            {
+                position = round(Mp.Position,0);
+                OnPropertyChanged("Position");
+            }
+        }
       
         public ICommand back
         {
@@ -289,7 +303,7 @@ namespace mp3player
         
             TotalTime = new TimeSpan();
             TotalTime = Mp.NaturalDuration.TimeSpan;
-
+            TotalTime = round(TotalTime,0);
           
             timerMusicTime = new DispatcherTimer();
             timerMusicTime.Interval = TimeSpan.FromSeconds(1);
@@ -307,8 +321,9 @@ namespace mp3player
                       
                         SliderValue = Mp.Position.TotalSeconds /
                                            TotalTime.TotalSeconds;
+                        Position = round(Mp.Position,0);
                     }
-                    if(SliderValue==1)
+                    if(SliderValue>=1)
                     {
                         object o = new object();
                         if (IsRepeated == false)
@@ -320,7 +335,20 @@ namespace mp3player
             }
         }
 
-       bool IsRepeated = false;
+        TimeSpan round (TimeSpan t1, int precision)
+        {  
+            const int TIMESPAN_SIZE = 7; 
+
+            int factor = (int)Math.Pow(10, (TIMESPAN_SIZE - precision));
+
+            TimeSpan roundedTimeSpan =  new TimeSpan(((long)Math.Round((1.0
+                * t1.Ticks / factor)) * factor));
+
+            return roundedTimeSpan;
+        }
+
+
+        bool IsRepeated = false;
         void Repeat(object o)
         {
             if(IsRepeated==false)
